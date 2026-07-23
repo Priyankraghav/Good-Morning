@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- SEO & PWA Meta -->
+  <title>प्रातः भजन — Morning Bhajan Player</title>
+  <meta name="description" content="प्रातः भजन — सुबह का भजन प्लेयर। एक टैप से भजन शुरू करें। ऑफ़लाइन काम करता है।">
+  <meta name="theme-color" content="#800020">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="प्रातः भजन">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Google Fonts: Yatra One (Devanagari display) + Poppins (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Yatra+One&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ╔═══════════════════════════════════════════╗
+       ║           MAIN APP CONTAINER              ║
+       ╚═══════════════════════════════════════════╝ -->
+  <main id="app" class="app">
+
+    <!-- ─── Header: Streak Badge + Settings ─── -->
+    <header class="header">
+      <div id="streak-badge" class="streak-badge hidden" aria-live="polite">
+        <span class="streak-fire">🔥</span>
+        <span id="streak-count">0</span> दिन लगातार
+      </div>
+      <button id="settings-btn" class="icon-btn settings-btn" aria-label="सेटिंग्स खोलें" title="सेटिंग्स">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65
+                   0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9
+                   19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0
+                   0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6
+                   9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0
+                   9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65
+                   1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4
+                   9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- ─── Diya (Oil Lamp) with Flame ─── -->
+    <div class="diya-wrapper" aria-hidden="true">
+      <div class="diya">
+        <!-- Flame -->
+        <div class="flame-group">
+          <div class="flame-glow"></div>
+          <div class="flame">
+            <div class="flame-core"></div>
+          </div>
+        </div>
+        <!-- Wick -->
+        <div class="wick"></div>
+        <!-- Bowl -->
+        <div class="bowl">
+          <div class="bowl-shine"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Title ─── -->
+    <div class="title-section">
+      <h1 class="title">प्रातः भजन</h1>
+      <p class="subtitle">Prātaḥ Bhajan</p>
+    </div>
+
+    <!-- ─── Play/Pause Button ─── -->
+    <button id="play-btn" class="play-btn" aria-label="भजन चलाएं">
+      <span class="play-ring"></span>
+      <span id="play-icon" class="btn-icon">
+        <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true">
+          <polygon points="18,12 36,24 18,36" fill="currentColor"/>
+        </svg>
+      </span>
+      <span id="pause-icon" class="btn-icon hidden">
+        <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true">
+          <rect x="14" y="12" width="7" height="24" rx="2" fill="currentColor"/>
+          <rect x="27" y="12" width="7" height="24" rx="2" fill="currentColor"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- ─── Progress Bar ─── -->
+    <div class="progress-section">
+      <div class="progress-track" id="progress-track"
+           role="slider" aria-label="भजन प्रगति"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+           tabindex="0">
+        <div class="progress-fill" id="progress-fill"></div>
+        <div class="progress-thumb" id="progress-thumb"></div>
+      </div>
+      <div class="time-row">
+        <span id="elapsed" class="time-label">0:00</span>
+        <span id="remaining" class="time-label">-0:00</span>
+      </div>
+    </div>
+
+    <!-- ─── Om Symbol (decorative) ─── -->
+    <div class="om-symbol" aria-hidden="true">ॐ</div>
+
+  </main>
+
+  <!-- ╔═══════════════════════════════════════════╗
+       ║          RESUME OVERLAY                   ║
+       ╚═══════════════════════════════════════════╝ -->
+  <div id="resume-overlay" class="overlay hidden"
+       role="alertdialog" aria-modal="true" aria-label="भजन रुक गया" aria-hidden="true">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-card">
+      <div class="overlay-emoji">🙏</div>
+      <p class="overlay-text">भजन रुक गया है</p>
+      <button id="resume-btn" class="action-btn">फिर से चलाएं</button>
+    </div>
+  </div>
+
+  <!-- ╔═══════════════════════════════════════════╗
+       ║          SETTINGS PANEL                   ║
+       ╚═══════════════════════════════════════════╝ -->
+  <div id="settings-backdrop" class="settings-backdrop hidden"></div>
+  <aside id="settings-panel" class="settings-panel hidden"
+         role="dialog" aria-modal="true" aria-label="सेटिंग्स" aria-hidden="true">
+
+    <div class="settings-header">
+      <h2 class="settings-title">सेटिंग्स</h2>
+      <button id="settings-close" class="icon-btn" aria-label="बंद करें">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="settings-body">
+      <!-- Streak Toggle -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">🔥 स्ट्रीक ट्रैकिंग</span>
+          <span class="setting-desc">80% भजन सुनने पर दिन गिनें</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="streak-toggle" checked>
+          <span class="toggle-track"><span class="toggle-knob"></span></span>
+        </label>
+      </div>
+
+      <!-- Reset Streak -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">स्ट्रीक रीसेट करें</span>
+          <span class="setting-desc">गिनती शून्य से शुरू करें</span>
+        </div>
+        <button id="reset-streak-btn" class="small-btn danger">रीसेट</button>
+      </div>
+
+      <hr class="setting-divider">
+
+      <!-- Reminder Toggle -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">⏰ याद दिलाना</span>
+          <span class="setting-desc">रोज़ भजन का समय</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="reminder-toggle">
+          <span class="toggle-track"><span class="toggle-knob"></span></span>
+        </label>
+      </div>
+
+      <!-- Reminder Time Picker -->
+      <div id="reminder-time-row" class="setting-row sub-setting hidden">
+        <div class="setting-info">
+          <span class="setting-label">समय चुनें</span>
+        </div>
+        <input type="time" id="reminder-time" class="time-input" value="05:30">
+      </div>
+
+      <!-- Reminder Disclaimer -->
+      <div id="reminder-note" class="setting-note hidden">
+        <p>⚠️ यह सुविधा सबसे अच्छे से <strong>installed app</strong> में (Android पर)
+        काम करती है। iOS Safari में notifications की सीमाएं हैं। App/tab बंद होने पर
+        reminder नहीं आएगा।</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Audio Element ─── -->
+  <audio id="audio" preload="auto">
+    <source src="assets/bhajan.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="app.js"></script>
+</body>
+</html>
