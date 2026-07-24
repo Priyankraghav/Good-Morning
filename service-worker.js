@@ -3,7 +3,7 @@
    Strategy: Cache-first for app shell, Range-aware caching for audio.
    =========================================================== */
 
-const CACHE_NAME = 'pratah-bhajan-v1';
+const CACHE_NAME = 'pratah-bhajan-v2';
 
 // App shell — always pre-cached on install
 const APP_SHELL = [
